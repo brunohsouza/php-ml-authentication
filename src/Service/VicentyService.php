@@ -8,7 +8,6 @@
 
 namespace App\Service;
 
-
 use Phpml\Math\Distance;
 
 class VicentyService implements Distance
@@ -17,10 +16,7 @@ class VicentyService implements Distance
     const EARTH_RADIUS = 6371000;
 
     /**
-     * Calculates the great-circle distance between two points, with
-     * the Vincenty formula.
-     * @link https://stackoverflow.com/questions/10053358/measuring-the-distance-between-two-coordinates-in-php
-     * @author Darryl Hein
+     * Calculates the great-circle distance between two points, with the Vincenty formula.
      * @param float $latitudeFrom Latitude of start point in [deg decimal]
      * @param float $longitudeFrom Longitude of start point in [deg decimal]
      * @param float $latitudeTo Latitude of target point in [deg decimal]

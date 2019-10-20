@@ -14,9 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
  * Class LastAccess
  * @package App\Document
  * @ORM\Entity
- * @ORM\Table("last_access")
+ * @ORM\Table("mlauth.access")
  */
-class LastAccess
+class Access
 {
 
     /**
@@ -24,43 +24,44 @@ class LastAccess
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
      */
-    protected $id;
+    private $id;
 
     /**
      * @var string
      * @ORM\Column(type="string")
      */
-    protected $ip;
+    private $ip;
 
     /**
      * @var string
      * @ORM\Column(type="string")
      */
-    protected $browser;
+    private $browser;
 
     /**
      * @var string
      * @ORM\Column(type="string")
      */
-    protected $country;
+    private $country;
 
     /**
      * @var string
      * @ORM\Column(type="string", nullable=true)
      */
-    protected $latitude;
+    private $latitude;
 
     /**
      * @var string
      * @ORM\Column(type="string", nullable=true)
      */
-    protected $longitude;
+    private $longitude;
 
     /**
      * @var User
-     * @ORM\Column(type="integer")
+     * @ORM\ManyToOne(targetEntity="User", cascade={"persist"})
+     * @ORM\JoinColumn(name="user", referencedColumnName="id")
      */
-    protected $user;
+    private $user;
 
     /**
      * @return mixed

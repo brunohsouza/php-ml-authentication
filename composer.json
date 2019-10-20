@@ -26,7 +26,11 @@
         "symfony/validator": "4.2.*",
         "symfony/web-link": "4.2.*",
         "symfony/yaml": "4.2.*",
-        "twig/extensions": "^1.5"
+        "twig/extensions": "^1.5",
+        "php-ai/php-ml": "*",
+        "symfony/http-client": "*",
+        "egeloen/google-map": "1.0.*",
+        "egeloen/serializer": "*"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.1",

@@ -26,8 +26,6 @@ class AuthCommandController extends Command
 
     private $output;
 
-    private $helperSet;
-
     private $container;
 
     private $em;
@@ -46,7 +44,8 @@ class AuthCommandController extends Command
             ->setDescription('Application to check authentications in different places')
             ->setHelp('-h');
         $this->addArgument('action', InputArgument::OPTIONAL, 'The name of the action');
-        $this->addOption('actions', 'l', InputOption::VALUE_OPTIONAL, 'Choose the action: ');
+        $this->addOption('load', 'l', InputArgument::OPTIONAL, 'The name of the dataset [access, user]');
+        $this->addOption('actions', 'x', InputOption::VALUE_OPTIONAL, 'Choose the action: ');
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
@@ -55,15 +54,21 @@ class AuthCommandController extends Command
         $this->output = $output;
         $helper = $this->getHelper('question');
         $actionAnswer = $input->getOption('actions');
+        $loadOption = $input->getOption('load');
 
-        if (is_null($actionAnswer)) {
+        if (is_null($actionAnswer) && is_null($loadOption)) {
             $operation = new Question('Type the name of action you wanna do now: ');
             $actionAnswer = $helper->ask($this->input, $this->output, $operation);
         }
 
-        if ($actionAnswer === 'load') {
+        if ($loadOption) {
+            $this->{$loadOption}();
+        }
+
+        if ($actionAnswer === 'load' || $loadOption) {
             $datasetQuestion = new Question('Which dataset do you wanna load?: ');
             $datasetAnswer = $helper->ask($this->input, $this->output, $datasetQuestion);
+            $this->{$datasetAnswer}();
         }
 
         if ($actionAnswer === 'login') {
@@ -98,17 +103,8 @@ class AuthCommandController extends Command
     {
         try {
             $accessService = new AccessService($this->em);
-            $accuracy = $accessService->loadDataset();
+            $accuracy = $accessService->generateDatasetAccess();
             $this->showOutput('Accuracy (k=%s): %.02f%% correct: %s', $accuracy[0], $accuracy[1], $accuracy[2] . PHP_EOL);
-        } catch (\Exception $exception) {
-            throw new \Exception($exception->getMessage());
-        }
-    }
-
-    public function login($username, $password)
-    {
-        try {
-
         } catch (\Exception $exception) {
             throw new \Exception($exception->getMessage());
         }

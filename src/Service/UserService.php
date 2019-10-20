@@ -16,7 +16,11 @@ use Phpml\Dataset\CsvDataset;
 
 class UserService
 {
+    const DATASET_DIR = 'data/datasets/';
+
     private $em;
+
+    private $nationalNamesCsv = 'NationalNames.csv';
 
     public function __construct(EntityManager $entityManager)
     {
@@ -26,15 +30,12 @@ class UserService
     public function loadDataset()
     {
         try {
-            if (file_exists('data/datasets/NationalNames.csv')) {
-                $dataset = new CsvDataset('data/datasets/NationalNames.csv', 4, true, ',');
-
-                foreach (range(1, 10) as $k) {
-                    foreach ($dataset->getSamples() as $index => $sample) {
-                        $user = new User($sample[1], $sample[3], $sample[2]);
-                        $this->em->persist($user);
-                        $this->em->flush();
-                    }
+            if (file_exists(self::DATASET_DIR . $this->nationalNamesCsv)) {
+                $dataset = new CsvDataset(self::DATASET_DIR . $this->nationalNamesCsv, 4, true, ',');
+                foreach ($dataset->getSamples() as $index => $sample) {
+                    $user = new User($sample[1]);
+                    $this->em->persist($user);
+                    $this->em->flush();
                 }
             }
         } catch (\Exception $exception) {
@@ -42,31 +43,20 @@ class UserService
         }
     }
 
-    public function login()
+    public function getUserNamesDataset()
     {
-
-    }
-
-
-                        /*$estimator =  new KNearestNeighbors($k);
-                        $estimator->train($other = $this->removeIndex($index, $dataset->getSamples()), $this->removeIndex($index, $dataset->getTargets()));
-
-                        $predict = $estimator->predict([$sample]);
-
-                        if ($predict[0] === $dataset->getTargets()[$index]) {
-                            $correct++;
-                        }
-                    }
-
-//                    return [$k, ($correct / count($dataset->getSamples())) * 100, $correct];
+        try {
+            $fileNames = self::DATASET_DIR . $this->nationalNamesCsv;
+            if (file_exists($fileNames)) {
+                $dataset = new CsvDataset($fileNames, 2, true, ',');
+                $names = [];
+                foreach ($dataset->getSamples() as $index => $sample) {
+                    $names[] = [$sample[0], $sample[1]];
                 }
+                return $names;
             }
+        } catch (\Exception $exception) {
+            throw new \Exception($exception->getMessage());
+        }
     }
-
-    function removeIndex($index, $array): array
-    {
-        unset($array[$index]);
-        return $array;
-    }*/
-
 }

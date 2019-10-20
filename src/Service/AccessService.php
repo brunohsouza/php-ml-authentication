@@ -12,17 +12,23 @@ use App\Entity\LastAccess;
 use Doctrine\ORM\EntityManager;
 use Phpml\Dataset\CsvDataset;
 
-class AccessService
+class AccessService extends AbstractService
 {
     const DATASET_DIR = 'data/datasets/';
 
     private $filename = 'visitor-interests.csv';
+
+    /**
+     * @var UserService
+     */
+    private $userService;
 
     private $em;
 
     public function __construct(EntityManager $entityManager)
     {
         $this->em = $entityManager;
+        $this->userService = new UserService($this->em);
     }
 
     public function loadDataset()
@@ -66,15 +72,23 @@ class AccessService
         try {
             if (file_exists(self::DATASET_DIR . $this->filename)) {
                 $dataset = new CsvDataset(self::DATASET_DIR . $this->filename, 4, true, ',');
+                $datasetNames = $this->userService->loadDataset();
                 $countryIp = new CountryIpService($this->em);
                 $lines = [];
-                foreach (range(1, 10) as $k) {
-                    $correct = 0;
-                    foreach ($dataset->getSamples() as $indice => $sample) {
-                        $country = $countryIp->findCountryByIp($sample[0]);
-                        $lines[] = sprintf('%s,%s,%s,%s,%s,%s,', $sample[0],$sample[1],$sample[2], $country['location']['lat'], $country['location']['lng'], rand(1, 57354)) . PHP_EOL;
-                        file_put_contents('data/datasets/access.csv', $lines);
-                    }
+                foreach ($dataset->getSamples() as $indice => $sample) {
+                    $country = json_decode($countryIp->findIpOnAPI($sample[0]), true);
+                    $idPerson = rand(1, 57354);
+                    $accessDevice = $this->removeComma($sample[1]);
+                    $lines[] = sprintf('%s,%s,%s,%s,%s,%s,%s,',
+                            $datasetNames[$idPerson][0],
+                            $datasetNames[$idPerson][1],
+                            $sample[0],
+                            $accessDevice,
+                            $sample[2],
+                            $country['location']['lat'],
+                            $country['location']['lng'])
+                        . PHP_EOL;
+                    file_put_contents('data/datasets/access.csv', $lines);
                 }
             }
         } catch (\Exception $exception) {
@@ -98,7 +112,7 @@ class AccessService
                     $access = $lastAccess->findOneBy(['user' => $target]);
                     if ($access instanceof LastAccess) {
                         foreach($dataset->getSamples() as $key => $sample) {
-                            if ($access->getIp() == $sample[0] && $access->getUser() !== $target) {
+                            if ($access->getUser() !== $target) {
                                 $arrFrom = [$access->getLatitude(), $access->getLongitude()];
                                 $arrTo = [$sample[4], $sample[5]];
                                 $diffDistance = $vicenty->distance($arrFrom, $arrTo);

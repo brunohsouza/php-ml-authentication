@@ -25,7 +25,7 @@ class SuspectService
             foreach (range(1, 10) as $k) {
                 $correct = 0;
                 foreach ($dataset->getSamples() as $index => $sample) {
-                    $estimator = new KNearestNeighbors($k, $vicenty);
+                    $estimator = new KNearestNeighbors($k);
                     $estimator->train($other = $this->removeIndex($index, $dataset->getSamples()), $this->removeIndex($index, $dataset->getTargets()));
 
                     $predict = $estimator->predict([$sample]);

@@ -12,20 +12,28 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="CountryIpRepository")
- * @ORM\Table(name="ip2location")
+ * @ORM\Entity(repositoryClass="App\Repository\CountryIpRepository")
+ * @ORM\Table(name="mlauth.country_ip")
  */
 class CountryIp
 {
 
     /**
      * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string")
      */
     private $ipFrom;
 
     /**
-     * @ORM\Column(type="integer")
+     * @var string
+     * @ORM\Column(type="string")
      */
     private $ipTo;
 
@@ -52,7 +60,7 @@ class CountryIp
     /**
      * @return mixed
      */
-    public function getIpFrom()
+    public function getIpFrom(): string
     {
         return $this->ipFrom;
     }
@@ -144,4 +152,24 @@ class CountryIp
     {
         $this->longitude = $longitude;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return CountryIp
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+
 }

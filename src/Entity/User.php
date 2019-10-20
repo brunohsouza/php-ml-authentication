@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Class User
  * @package PhpmlAuth\Document
- * @ORM\Table("users")
+ * @ORM\Table("mlauth.user")
  * @ORM\Entity
  */
 class User
@@ -33,25 +33,12 @@ class User
     protected $name;
 
     /**
-     * @var string
-     * @ORM\Column(type="string", length=1)
-     */
-    protected $gender;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    protected $year;
-
-    /**
      * User constructor.
      * @param $name
      * @param $gender
      */
-    public function __construct($name, $gender, $year)
+    public function __construct($name)
     {
         $this->name = $name;
-        $this->gender = $gender;
-        $this->year = $year;
     }
 }
